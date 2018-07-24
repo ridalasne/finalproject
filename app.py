@@ -21,16 +21,17 @@ def do_admin_login():
     users = json.load(usersFile)
     usersFile.close()
 
+    print("username " + str(request.form))
+
     POST_USERNAME = str(request.form['username'])
     POST_PASSWORD = str(request.form['password'])
 
-    '''
-    if POST_PASSWORD == users[POST_USERNAME]["password"]:
-        session['logged_in'] = True '''
 
     if users[POST_USERNAME]["password"] == POST_PASSWORD:
         session["username"] = POST_USERNAME;
         session['logged_in'] = True
+        session["favorites"] = users[session["username"]]['favorites']
+
     else:
         flash('wrong password!')
 
@@ -69,30 +70,32 @@ def foodloc():
 def touristicloc():
     return render_template('touristicdestinations.html')
 
-@app.route("/favorite")
+
+@app.route("/favorite", methods=["POST"])
 def favorite():
     usersFile = open("users.json","r")
     users = json.load(usersFile)
     usersFile.close()
 
-    POST_USERNAME = str(request.form['username'])
-    POST_PASSWORD = str(request.form['password'])
+    print ('image name' + str(request.form))
 
-    with open(img1, "rb") as imageFile:
-    str = base64.b64encode(imageFile.read())
+    POST_IMAGE = str(request.form['imagename'])
 
-    a_dict = {'favorites': str}
+    if POST_IMAGE in users[session["username"]]['favorites']:
+        flash("You already saved this image!")
+    else:
+        users[session["username"]]['favorites'].append(POST_IMAGE)
+        session["favorites"] = users[session["username"]]['favorites']
 
-    with open('users.json') as f:
-    data = json.load(f)
-            
-    data.update(a_dict)
+    favorites = session["favorites"]
 
-    with open('users.json', 'w') as f:
-        json.dump(data, f)
+    usersFile = open('users.json','w')
+    json.dump(users, usersFile)
+    usersFile.close()
+
+    return render_template('favorite.html', favorites = favorites)
 
 
-    return render_template('favorite.html')
 
 @app.route("/createUser", methods=['POST'])
 def createUser():
@@ -107,7 +110,7 @@ def createUser():
     if POST_USERNAME in users:
         flash("This username exists")
     else:
-        users[POST_USERNAME] = {"password" : POST_PASSWORD}
+        users[POST_USERNAME] = {"password" : POST_PASSWORD , "favorites":[]}
 
         usersFile = open('users.json','w')
         json.dump(users, usersFile)

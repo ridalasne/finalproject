@@ -62,6 +62,10 @@ div.figure {
 
 }
 
+.imageInput{
+  display:none;
+
+}
 .row {
   display: flex;
   flex-wrap: wrap;
@@ -128,7 +132,6 @@ div.figure {
  display: inline-table;
  transition: .5s ease;
 }
-
 .middle {
   transition: .5s ease;
   opacity: 0;
@@ -137,15 +140,12 @@ div.figure {
   -ms-transform: translate(-20%, -20%);
   text-align: center;
 }
-
 .container:hover .image {
   opacity: 0.8;
 }
-
 .container:hover .middle {
   opacity: 1;
 }
-
 .text {
   background-color: #4CAF50;
   color: white;
